@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Destination", menuName = "Ticket to Ride/Destination")]

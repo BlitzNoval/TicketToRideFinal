@@ -1,19 +1,51 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class Route : MonoBehaviour
 {
-    public bool IsClaimed { get; private set; }
-    public Player ClaimingPlayer { get; private set; }
+    public bool IsClaimed { get; set; }
+    public Player ClaimingPlayer { get; set; }
+    public string RequiredColor { get; set; }
+    public int RequiredColorCount { get; set; }
+    public GameObject routeBox;
+    public Routes routeData; // Reference to the Routes ScriptableObject
+    public DestinationTicket? destinationTicket;
+    public Button claimButton;
 
-    // Implement any necessary properties or variables for the route
+    private void Start()
+    {
+        claimButton.onClick.AddListener(ClaimRoute);
+    }
 
     public void Claim(Player claimingPlayer)
     {
-        IsClaimed = true;
-        ClaimingPlayer = claimingPlayer;
+        if (IsClaimed)
+        {
+            Debug.Log("Route is already claimed.");
+            return;
+        }
 
-        // Implement any necessary actions or logic when the route is claimed
+        claimingPlayer.ClaimRoute(this);
+    }
+
+    public void ClaimRoute()
+    {
+        if (IsClaimed)
+        {
+            Debug.Log("Route is already claimed.");
+            return;
+        }
+
+        if (ClaimingPlayer != null && ClaimingPlayer.HasColorCards(RequiredColor, RequiredColorCount))
+        {
+            // Add your logic to handle claiming the route here
+            Debug.Log("Claiming the route from " + routeData.startCity + " to " + routeData.endCity);
+        }
+        else
+        {
+            Debug.Log("Not enough color cards to claim the route.");
+        }
     }
 
     public List<Card> GetCardsNeeded()

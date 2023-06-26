@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
     public Sprite blackSprite;
     public Sprite locomotive;
 
-    private int maxHandSize = 30; // Maximum number of cards a player can hold
+    private int maxHandSize = 4; // Maximum number of cards a player can hold
     public List<DestinationTicket> destinationCardHand;
     public int maxDestinationCardHandSize = 10;
 
@@ -65,6 +65,66 @@ public class Player : MonoBehaviour
         ShowCards();
     }
 
+    public static Player Instance { get; private set; }
+
+    private void Awake()
+    {
+        // Set the instance to the current object when it is created
+        Instance = this;
+
+    
+    }
+
+
+ public bool HasColorCards(string color, int count)
+    {
+        int cardCount = 0;
+        foreach (Card card in hand)
+        {
+            if (card.Color == color || card.Color == "Locomotive")
+            {
+                cardCount++;
+            }
+        }
+        return cardCount >= count;
+    }
+
+  public void ClaimRoute(Route route)
+{
+    // Check if the route is already claimed
+    if (route.IsClaimed)
+    {
+        Debug.Log("Route is already claimed.");
+        return;
+    }
+
+    // Check if the player has enough color cards to claim the route
+    if (HasColorCards(route.RequiredColor, route.RequiredColorCount))
+    {
+        // Claim the route
+        route.Claim(this);
+    }
+    else
+    {
+        Debug.Log("Not enough color cards to claim the route.");
+    }
+}
+  public bool CanClaimRoute(Route route)
+    {
+        // Check if the player has the required color cards and enough of them
+        List<Card> colorCards = GetColorCards(route.RequiredColor);
+        return colorCards.Count >= route.RequiredColorCount;
+    }
+
+    private List<Card> GetColorCards(string color)
+    {
+        List<Card> colorCards = new List<Card>();
+
+        // Logic to retrieve color cards of the specified color from the player's hand
+        // Implement this based on your game's implementation
+
+        return colorCards;
+    }
     public void AddToHand(Card card)
     {
         if (hand.Count < maxHandSize)
@@ -244,58 +304,5 @@ public class Player : MonoBehaviour
         destinationCardHandGridLayout.constraintCount = destinationCardHand.Count;
         LayoutRebuilder.ForceRebuildLayoutImmediate(destinationCardHandGridLayout.GetComponent<RectTransform>());
         destinationCardHandScrollRect.verticalNormalizedPosition = 1f;
-    }
-
-    public bool HasDestinationCard(DestinationTicket destinationTicket)
-    {
-        return destinationCardHand.Contains(destinationTicket);
-    }
-
-    public bool HasColorCards(int numCards, string color)
-    {
-        int count = 0;
-        foreach (Card card in hand)
-        {
-            if (card.Color == color || card.Color == "Locomotive")
-            {
-                count++;
-            }
-        }
-        return count >= numCards;
-    }
-
-    public void RemoveColorCards(int numCards, string color)
-    {
-        int count = 0;
-        List<Card> cardsToRemove = new List<Card>();
-        foreach (Card card in hand)
-        {
-            if (card.Color == color || card.Color == "Locomotive")
-            {
-                cardsToRemove.Add(card);
-                count++;
-                if (count == numCards)
-                {
-                    break;
-                }
-            }
-        }
-        foreach (Card card in cardsToRemove)
-        {
-            hand.Remove(card);
-        }
-    }
-
-    public List<DestinationTicket> GetAvailableDestinations()
-    {
-        List<DestinationTicket> availableDestinations = new List<DestinationTicket>();
-        foreach (DestinationTicket destinationTicket in destinationCardDeck.destinationTickets)
-        {
-            if (!destinationCardHand.Contains(destinationTicket))
-            {
-                availableDestinations.Add(destinationTicket);
-            }
-        }
-        return availableDestinations;
     }
 }

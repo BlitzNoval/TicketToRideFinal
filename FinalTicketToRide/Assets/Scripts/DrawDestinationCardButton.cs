@@ -24,7 +24,7 @@ public class DrawDestinationCardButton : MonoBehaviour
 
     private void DrawDestinationCardForPlayer(Player player)
     {
-        DestinationTicket drawnTicket = destinationCardDeck.DrawCard();
+        DestinationTicket drawnTicket = destinationCardDeck.DrawTicket();
         if (drawnTicket != null)
         {
             player.AddDestinationCard(drawnTicket);

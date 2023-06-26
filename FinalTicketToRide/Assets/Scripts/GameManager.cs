@@ -25,8 +25,6 @@ public class GameManager : MonoBehaviour
     private CardDeck cardDeck;
     private Player player1;
     private Player player2;
-     public Dropdown destinationDropdown;
-    
 
     public static GameManager Instance { get; private set; }
 
@@ -56,8 +54,6 @@ public class GameManager : MonoBehaviour
         // Retrieve player names from text fields and assign them
         PlayerData.player1Name = player1NameText.text;
         PlayerData.player2Name = player2NameText.text;
-
-        destinationDropdown.onValueChanged.AddListener(OnDestinationDropdownValueChanged);
     }
 
     public CardDeck CardDeck
@@ -106,172 +102,22 @@ public class GameManager : MonoBehaviour
         route.UpdateUI();
     }
 
-    
+    public bool CanClaimRoute(Route route, Player claimingPlayer)
     {
-        // Handle the claim route action
-private void OnClaimRouteButtonClicked()
-{
-    // Handle the claim route action
+        // Add your custom conditions here to determine if the player can claim the route
+        // For example, checking if the player has enough cards, if the route is already claimed, etc.
 
-    // Get the selected destination from the dropdown
-    string selectedDestination = destinationDropdown.options[destinationDropdown.value].text;
-
-    // Get the active player
-    Player activePlayer = GetActivePlayer();
-
-    // Check if the active player has the selected destination in their hand
-    if (activePlayer.HasDestinationCard(selectedDestination))
-    {
-        // Example: Assuming you have the required variables to determine the number of cards and color
-        int numCards = 3;
-        string color = "Green";
-        if (!activePlayer.HasColorCards(numCards, color))
+        // Check if the route has already been claimed
+        if (route.IsClaimed)
         {
-            Debug.LogWarning("Player does not have enough color cards to claim the route!");
-            return;
+            return false;
         }
 
-        // Get the required color cards for the selected destination
-        List<string> requiredColors = GetRequiredColorsForDestination(selectedDestination);
-
-        // Check if the active player has enough color cards to claim the route
-        if (!activePlayer.HasColorCards(requiredColors))
-        {
-            Debug.LogWarning("Player does not have enough color cards to claim the route!");
-            return;
-        }
-
-        // Deduct the required color cards from the active player's hand
-        activePlayer.RemoveColorCards(requiredColors);
-
-        // Perform the route claiming logic
-        // (Call the ClaimRoute method with the selected route and the active player)
-
-        // Other necessary actions and logic...
-
-        // Update the UI and other necessary components
-    }
-    else
-    {
-        Debug.LogWarning("Player does not have the selected destination card!");
-    }
-}
-        // Check if the active player has the selected destination in their hand
-       public bool HasDestinationCard(string destination)
-{
-    foreach (DestinationTicket destinationTicket in destinationCardHand)
-    {
-        if (destinationTicket.Destination == destination)
-        {
-            return true;
-        }
-    }
-    return false;
-
-    // Example: Assuming you have the required variables to determine the number of cards and color
-int numCards = 3;
-string color = "Green";
-if (!activePlayer.HasColorCards(numCards, color))
-{
-    Debug.LogWarning("Player does not have enough color cards to claim the route!");
-    return;
-}
-
-}
-
-        // Get the required color cards for the selected destination
-private List<string> GetRequiredColorsForDestination(string destination)
-{
-    // Implement your logic to determine the required color cards for the given destination
-    // This could involve querying your game data or other custom rules
-
-    // For demonstration purposes, let's assume the required colors are fixed for each destination
-
-    // Destination "A" requires 2 red color cards and 1 blue color card
-    if (destination == "A")
-    {
-        return new List<string> { "Red", "Red", "Blue" };
-    }
-    // Destination "B" requires 3 green color cards and 1 yellow color card
-    else if (destination == "B")
-    {
-        return new List<string> { "Green", "Green", "Green", "Yellow" };
-    }
-    // Add more cases for other destinations...
-
-    // If the destination is not found, return an empty list
-    return new List<string>();
-}
-
-        // Deduct the required color cards from the active player's hand
-        activePlayer.RemoveColorCards(requiredColors);
-
-        // Perform the route claiming logic
-        // (Call the ClaimRoute method with the selected route and the active player)
-
-        // Other necessary actions and logic...
-
-        // Update the UI and other necessary components
+        // Check if the claiming player has enough cards to claim the route
+        List<Card> cardsNeeded = route.GetCardsNeeded();
+        return claimingPlayer.HasCards(cardsNeeded);
     }
 
-    private List<string> GetRequiredColorsForDestination(string destination)
-    {
-        // Implement your logic to determine the required color cards for the given destination
-        // This could involve querying your game data or other custom rules
-
-        // For demonstration purposes, let's assume the required colors are fixed for each destination
-
-        // Destination "A" requires 2 red color cards and 1 blue color card
-        if (destination == "A")
-        {
-            return new List<string> { "Red", "Red", "Blue" };
-        }
-        // Destination "B" requires 3 green color cards and 1 yellow color card
-        else if (destination == "B")
-        {
-            return new List<string> { "Green", "Green", "Green", "Yellow" };
-        }
-        // Add more cases for other destinations...
-
-public List<string> GetAvailableDestinations()
-{
-    List<string> availableDestinations = new List<string>();
-    foreach (DestinationTicket destinationTicket in destinationCardDeck.destinationTickets)
-    {
-        if (!destinationCardHand.Contains(destinationTicket))
-        {
-            availableDestinations.Add(destinationTicket.Destination);
-        }
-    }
-    return availableDestinations;
-}
-
-        // If the destination is not found, return an empty list
-        return new List<string>();
-    }
-
-    private void OnDestinationDropdownValueChanged(int index)
-    {
-        // Update the available destination options based on the active player's hand
-
-        // Clear the existing options
-        destinationDropdown.ClearOptions();
-
-        // Get the active player
-        Player activePlayer = GetActivePlayer();
-
-        // Get the available destinations from the active player's hand
-        List<string> availableDestinations = activePlayer.GetAvailableDestinations();
-
-        // Add the available destinations to the dropdown options
-        destinationDropdown.AddOptions(availableDestinations);
-
-        // Select the first option by default
-        if (availableDestinations.Count > 0)
-        {
-            destinationDropdown.value = 0;
-        }
-    }
     bool IsGameOver()
     {
         // Add your implementation here

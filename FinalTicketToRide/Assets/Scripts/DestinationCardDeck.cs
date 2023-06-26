@@ -4,43 +4,43 @@ using UnityEngine;
 
 public class DestinationCardDeck : MonoBehaviour
 {
-    public List<DestinationTicket> destinationCards = new List<DestinationTicket>(); // List to hold the destination cards
+    public List<DestinationTicket> destinationTickets = new List<DestinationTicket>(); // List to hold the destination tickets
 
-    private int currentIndex = 0; // Current index of the card being drawn
+    private int currentIndex = 0; // Current index of the ticket being drawn
 
-    // Method to initialize the deck with a list of destination cards
-    public void InitializeDeck(List<DestinationTicket> cards)
+    // Method to initialize the deck with a list of destination tickets
+    public void InitializeDeck(List<DestinationTicket> tickets)
     {
-        destinationCards = cards;
+        destinationTickets = tickets;
         ShuffleDeck(); // Shuffle the deck when initializing
     }
 
-    // Method to shuffle the destination card deck
+    // Method to shuffle the destination ticket deck
     public void ShuffleDeck()
     {
         // Fisher-Yates shuffle algorithm
-        int n = destinationCards.Count;
+        int n = destinationTickets.Count;
         while (n > 1)
         {
             n--;
             int k = Random.Range(0, n + 1);
-            DestinationTicket temp = destinationCards[k];
-            destinationCards[k] = destinationCards[n];
-            destinationCards[n] = temp;
+            DestinationTicket temp = destinationTickets[k];
+            destinationTickets[k] = destinationTickets[n];
+            destinationTickets[n] = temp;
         }
     }
 
-    // Method to draw a destination card from the deck
-    public DestinationTicket DrawCard()
+    // Method to draw a destination ticket from the deck
+    public DestinationTicket DrawTicket()
     {
-        if (currentIndex >= destinationCards.Count)
+        if (currentIndex >= destinationTickets.Count)
         {
-            Debug.LogWarning("No more destination cards in the deck!");
+            Debug.LogWarning("No more destination tickets in the deck!");
             return null;
         }
 
-        DestinationTicket card = destinationCards[currentIndex];
+        DestinationTicket ticket = destinationTickets[currentIndex];
         currentIndex++;
-        return card;
+        return ticket;
     }
 }
