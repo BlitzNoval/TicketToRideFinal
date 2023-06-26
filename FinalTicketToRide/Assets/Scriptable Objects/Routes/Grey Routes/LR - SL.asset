@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: beb0bc9f781184344b36abc9238d5ddd, type: 3}
-  m_Name: A - R 1
+  m_Name: LR - SL
   m_EditorClassIdentifier: 
-  startCity: 'Atlanta '
-  endCity: Charleston
+  startCity: Little Rock
+  endCity: Saint Louis
   requiredCards: 0900000009000000
