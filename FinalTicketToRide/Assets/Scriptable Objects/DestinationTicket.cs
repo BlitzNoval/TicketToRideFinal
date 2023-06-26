@@ -6,11 +6,17 @@ public class DestinationTicket : ScriptableObject
     public string startCity;
     public string endCity;
     public int pointValue;
+    public Sprite ticketSprite; // New field for the destination ticket sprite
+
+    public string GetDestinationText()
+    {
+        // Create a formatted string representing the destination
+        return startCity + " - " + endCity;
+    }
 
     public int GetPoints()
     {
-        // Calculate and return the point value of the destination ticket
-        // Replace this with your actual implementation based on your game's scoring logic
-        return pointValue; // Placeholder; replace with your actual implementation
+        // Return the point value of the destination ticket
+        return pointValue;
     }
 }

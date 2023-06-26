@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     public Sprite locomotiveSprite; // Reference to the locomotive sprite
     public Dictionary<string, Sprite> coloredCardSprites; // Dictionary to hold colored card sprites
     public CardDeck cardDeck;
+    public DestinationCardDeck destinationCardDeck; // Reference to the destination card deck
 
     // Placeholder sprite variables for different colors
     public Sprite redSprite;
@@ -27,11 +28,19 @@ public class Player : MonoBehaviour
     public Sprite blackSprite;
     public Sprite locomotive;
 
-    private int maxHandSize = 4; // Maximum number of cards a player can hold
+    private int maxHandSize = 30; // Maximum number of cards a player can hold
+    public List<DestinationTicket> destinationCardHand;
+    public int maxDestinationCardHandSize = 10;
+
+    public GameObject destinationCardPrefab; // Reference to the destination card prefab
+    public GameObject destinationCardHandPanel; // Reference to the destination card hand panel
+    public GridLayoutGroup destinationCardHandGridLayout; // Reference to the grid layout of destination card hand panel
+    public ScrollRect destinationCardHandScrollRect; // Reference to the scroll rect of destination card hand panel
 
     private void Start()
     {
         hand = new List<Card>(); // Initialize the hand list
+        destinationCardHand = new List<DestinationTicket>();
 
         if (drawTrainCardButton != null)
         {
@@ -151,7 +160,7 @@ public class Player : MonoBehaviour
         }
     }
 
-       public void ShowCards()
+    public void ShowCards()
     {
         // Clear the existing cards from the hand panel
         foreach (Transform child in gridLayout.transform)
@@ -189,41 +198,104 @@ public class Player : MonoBehaviour
         scrollRect.verticalNormalizedPosition = 1f;
     }
 
-    public void ShowPlayer2Cards()
+    public void AddDestinationCard(DestinationTicket destinationTicket)
     {
-        // Clear the existing cards from the hand panel
-        foreach (Transform child in gridLayout.transform)
+        // Check if the destination card hand is already full
+        if (destinationCardHand.Count >= maxDestinationCardHandSize)
+        {
+            Debug.LogWarning("Destination card hand is full. Cannot add more cards.");
+            return;
+        }
+
+        // Add the destination card to the destination card hand
+        destinationCardHand.Add(destinationTicket);
+
+        // Optionally, you can perform additional logic or validation here based on your game's rules
+
+        // Update the UI to show the added destination card
+        ShowDestinationCardHand();
+    }
+
+    public void ShowDestinationCardHand()
+    {
+        // Clear the existing cards from the destination card hand panel
+        foreach (Transform child in destinationCardHandPanel.transform)
         {
             Destroy(child.gameObject);
         }
 
-        // Instantiate card UI objects for each card in the hand
-        foreach (Card card in hand)
+        // Instantiate card UI objects for each destination ticket in the destination card hand
+        foreach (DestinationTicket destinationTicket in destinationCardHand)
         {
-            // Create a new GameObject for the card UI object
-            GameObject cardObject = Instantiate(cardPrefab);
+            // Create a new GameObject for the destination card UI object
+            GameObject destinationCardObject = Instantiate(destinationCardPrefab);
 
-            // Set the parent of the card object to the hand panel
-            cardObject.transform.SetParent(gridLayout.transform);
+            // Set the parent of the destination card object to the destination card hand panel
+            destinationCardObject.transform.SetParent(destinationCardHandPanel.transform);
 
-            // Get the Image component of the card object
-            Image cardImage = cardObject.GetComponent<Image>();
+            // Get the DestinationCardUI component of the destination card object
+            DCardUI dCardUI = destinationCardObject.GetComponent<DCardUI>();
 
-            // Set the card sprite based on the card's color
-            string color = card.Color;
-            if (coloredCardSprites.ContainsKey(color))
-            {
-                cardImage.sprite = coloredCardSprites[color];
-            }
-            else
-            {
-                Debug.LogWarning("Missing sprite for card color: " + color);
-            }
+            // Set the destination card's data in the DestinationCardUI component
+            dCardUI.SetDestinationTicket(destinationTicket);
         }
 
-        // Update the grid layout and scroll view
-        gridLayout.constraintCount = hand.Count;
-        LayoutRebuilder.ForceRebuildLayoutImmediate(gridLayout.GetComponent<RectTransform>());
-        scrollRect.verticalNormalizedPosition = 1f;
+        // Update the grid layout and scroll view of the destination card hand
+        destinationCardHandGridLayout.constraintCount = destinationCardHand.Count;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(destinationCardHandGridLayout.GetComponent<RectTransform>());
+        destinationCardHandScrollRect.verticalNormalizedPosition = 1f;
+    }
+
+    public bool HasDestinationCard(DestinationTicket destinationTicket)
+    {
+        return destinationCardHand.Contains(destinationTicket);
+    }
+
+    public bool HasColorCards(int numCards, string color)
+    {
+        int count = 0;
+        foreach (Card card in hand)
+        {
+            if (card.Color == color || card.Color == "Locomotive")
+            {
+                count++;
+            }
+        }
+        return count >= numCards;
+    }
+
+    public void RemoveColorCards(int numCards, string color)
+    {
+        int count = 0;
+        List<Card> cardsToRemove = new List<Card>();
+        foreach (Card card in hand)
+        {
+            if (card.Color == color || card.Color == "Locomotive")
+            {
+                cardsToRemove.Add(card);
+                count++;
+                if (count == numCards)
+                {
+                    break;
+                }
+            }
+        }
+        foreach (Card card in cardsToRemove)
+        {
+            hand.Remove(card);
+        }
+    }
+
+    public List<DestinationTicket> GetAvailableDestinations()
+    {
+        List<DestinationTicket> availableDestinations = new List<DestinationTicket>();
+        foreach (DestinationTicket destinationTicket in destinationCardDeck.destinationTickets)
+        {
+            if (!destinationCardHand.Contains(destinationTicket))
+            {
+                availableDestinations.Add(destinationTicket);
+            }
+        }
+        return availableDestinations;
     }
 }
